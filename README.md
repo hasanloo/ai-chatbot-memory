@@ -31,6 +31,9 @@
 - Data Persistence
   - [Neon Serverless Postgres](https://vercel.com/marketplace/neon) for saving chat history and user data
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
+- Memory Management
+  - [Zep Cloud](https://getzep.com) for cross-session memory and conversation context
+  - Abstracted memory layer for easy provider switching
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
 
