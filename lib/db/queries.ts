@@ -57,7 +57,25 @@ export async function createUser(email: string, password: string) {
   const hashedPassword = generateHashedPassword(password);
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    const result = await db
+      .insert(user)
+      .values({ email, password: hashedPassword })
+      .returning({
+        id: user.id,
+        email: user.email,
+      });
+
+    // Create user in memory system
+    if (result[0]?.id) {
+      try {
+        const { createUser: createMemoryUser } = await import('@/lib/memory');
+        await createMemoryUser(result[0].id, email);
+      } catch (memoryError) {
+        console.error('Error creating user in memory system:', memoryError);
+      }
+    }
+
+    return result;
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to create user');
   }
@@ -68,10 +86,25 @@ export async function createGuestUser() {
   const password = generateHashedPassword(generateUUID());
 
   try {
-    return await db.insert(user).values({ email, password }).returning({
+    const result = await db.insert(user).values({ email, password }).returning({
       id: user.id,
       email: user.email,
     });
+
+    // Create user in memory system
+    if (result[0]?.id) {
+      try {
+        const { createUser: createMemoryUser } = await import('@/lib/memory');
+        await createMemoryUser(result[0].id, email);
+      } catch (memoryError) {
+        console.error(
+          'Error creating guest user in memory system:',
+          memoryError,
+        );
+      }
+    }
+
+    return result;
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
@@ -210,11 +243,42 @@ export async function getChatById({ id }: { id: string }) {
 
 export async function saveMessages({
   messages,
+  threadId,
 }: {
   messages: Array<DBMessage>;
+  threadId?: string;
 }) {
   try {
-    return await db.insert(message).values(messages);
+    const result = await db.insert(message).values(messages);
+
+    // Also save to memory system if threadId is provided
+    if (threadId) {
+      const { addMessages } = await import('@/lib/memory');
+
+      const memoryMessages = messages.map((msg) => ({
+        role: msg.role as 'user' | 'assistant',
+        content: Array.isArray(msg.parts)
+          ? msg.parts
+              .filter((part: any) => part && part.type === 'text')
+              .map((part: any) => part.text)
+              .join('')
+          : '',
+        metadata: {
+          messageId: msg.id,
+          timestamp: msg.createdAt.toISOString(),
+        },
+      }));
+
+      if (memoryMessages.length > 0) {
+        try {
+          await addMessages(threadId, memoryMessages);
+        } catch (memoryError) {
+          console.error('Error saving messages to memory system:', memoryError);
+        }
+      }
+    }
+
+    return result;
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to save messages');
   }

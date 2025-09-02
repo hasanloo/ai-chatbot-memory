@@ -1,10 +1,10 @@
-<a href="https://chat.vercel.ai/">
+<a href="https://ai-chatbot-memory.vercel.app/">
   <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Chat SDK</h1>
+  <h1 align="center">Chat with Memory</h1>
 </a>
 
 <p align="center">
-    Chat SDK is a free, open-source template built with Next.js and the AI SDK that helps you quickly build powerful chatbot applications.
+    Chat with Memory is a free, open-source template built with Next.js and the AI SDK that helps you quickly build powerful chatbot applications with memory.
 </p>
 
 <p align="center">
@@ -31,6 +31,9 @@
 - Data Persistence
   - [Neon Serverless Postgres](https://vercel.com/marketplace/neon) for saving chat history and user data
   - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
+- Memory Management
+  - [Zep Cloud](https://getzep.com) for cross-session memory and conversation context
+  - Abstracted memory layer for easy provider switching
 - [Auth.js](https://authjs.dev)
   - Simple and secure authentication
 
