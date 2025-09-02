@@ -37,6 +37,7 @@ import { ChatSDKError } from '@/lib/errors';
 import type { ChatMessage } from '@/lib/types';
 import type { ChatModel } from '@/lib/ai/models';
 import type { VisibilityType } from '@/components/visibility-selector';
+import { createThread, getUserContext } from '@/lib/memory';
 
 export const maxDuration = 60;
 
@@ -109,6 +110,8 @@ export async function POST(request: Request) {
         message,
       });
 
+      await createThread(id, session.user.id);
+
       await saveChat({
         id,
         userId: session.user.id,
@@ -144,7 +147,11 @@ export async function POST(request: Request) {
           createdAt: new Date(),
         },
       ],
+      threadId: id,
     });
+
+    // Get user context from current thread (includes cross-session relevant context)
+    const userContext = await getUserContext(id, 'basic');
 
     const streamId = generateUUID();
     await createStreamId({ streamId, chatId: id });
@@ -153,7 +160,11 @@ export async function POST(request: Request) {
       execute: ({ writer: dataStream }) => {
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          system: systemPrompt({
+            selectedChatModel,
+            requestHints,
+            userContext,
+          }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
           experimental_activeTools:
@@ -200,6 +211,7 @@ export async function POST(request: Request) {
             attachments: [],
             chatId: id,
           })),
+          threadId: id,
         });
       },
       onError: () => {
