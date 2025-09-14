@@ -76,7 +76,7 @@ function PureChatHeader({
         asChild
       >
         <Link
-          href={`https://vercel.com/new/clone?repository-url=https://github.com/hasanloo/ai-chatbot-memory&env=AUTH_SECRET,XAI_API_KEY,BLOB_READ_WRITE_TOKEN,POSTGRES_URL,REDIS_URL,ZEP_API_KEY&envDescription=API Keys required for the application&envLink=https://github.com/hasanloo/ai-chatbot-memory/blob/main/.env.example&project-name=ai-chat-memory&repository-name=ai-chat-memory&demo-title=Next.js AI Chatbot with Memory&demo-description=An AI chatbot with Memory using Next.js and Zep cloud&demo-url=https://ai-chatbot-memory.vercel.app/&products=[{"type":"integration","integrationSlug":"xai","productSlug":"grok","protocol":"ai"}]`}
+          href={`https://vercel.com/new/clone?repository-url=https://github.com/hasanloo/ai-chatbot-memory&env=AUTH_SECRET,ZEP_API_KEY&envDescription=API Keys required for the application&envLink=https://github.com/hasanloo/ai-chatbot-memory/blob/main/.env.example&demo-title=Next.js AI Chatbot with Memory&demo-description=An AI chatbot with Memory using Next.js and Zep cloud&demo-url=https://ai-chatbot-memory.vercel.app/&products=[{"type":"integration","integrationSlug":"xai","productSlug":"grok","protocol":"ai"},{"type":"integration","protocol":"storage","productSlug":"neon","integrationSlug":"neon"},{"type":"integration","protocol":"storage","productSlug":"upstash-kv","integrationSlug":"upstash"},{"type":"blob"}]`}
           target="_noblank"
         >
           <VercelIcon size={16} />
